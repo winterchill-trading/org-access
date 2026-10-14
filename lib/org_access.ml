@@ -8,3 +8,4 @@ module Approval_id = Approval_id
 module Role = Role
 module Permission = Permission
 module Email = Email
+module Role_model = Role_model
