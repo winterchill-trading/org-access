@@ -7,3 +7,4 @@ module Invitation_id = Invitation_id
 module Approval_id = Approval_id
 module Role = Role
 module Permission = Permission
+module Email = Email
