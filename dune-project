@@ -48,3 +48,26 @@
   (base_quickcheck :with-test)
   (odoc :with-doc)))
 
+
+(package
+ (name org-access-cli)
+ (synopsis "Command-line view of org-access role models and approval policies")
+ (description
+  "The org-access command prints a role model's permission matrix, explains an authorization decision and computes how many approvals a set of amounts needs under a policy.")
+ (depends
+  oxcaml
+  (ocaml
+   (and
+    (>= 5.2.0)
+    (< 5.3~)))
+  dune
+  (core
+   (and
+    (>= v0.18~preview.130.106+341)
+    (< v0.19~)))
+  (core_unix
+   (and
+    (>= v0.18~preview.130.106+341)
+    (< v0.19~)))
+  (org-access
+   (= :version))))

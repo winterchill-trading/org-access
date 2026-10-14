@@ -1,0 +1,7 @@
+(executable
+ (name main)
+ (public_name org-access)
+ (package org-access-cli)
+ (libraries core core_unix.command_unix money org-access)
+ (preprocess
+  (pps ppx_jane)))
