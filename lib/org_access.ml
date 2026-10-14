@@ -36,3 +36,4 @@ module Team = Team
 module Audit = Audit
 module Store = Store
 module Store_memory = Store_memory
+module Store_conformance = Store_conformance
