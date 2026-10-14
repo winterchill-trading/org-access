@@ -9,3 +9,6 @@ module Role = Role
 module Permission = Permission
 module Email = Email
 module Role_model = Role_model
+module Text = Text
+module Organisation = Organisation
+module Member = Member
