@@ -26,7 +26,7 @@ module Status : sig
     | Approved
     | Rejected
     | Cancelled
-  [@@deriving sexp, compare, equal, hash, enumerate]
+  [@@deriving bin_io, sexp, compare, equal, hash, enumerate]
 
   (** [pending], [approved], [rejected], [cancelled]. *)
   val to_string : t -> string

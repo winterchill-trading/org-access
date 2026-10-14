@@ -13,7 +13,7 @@ module Status : sig
   type t =
     | Active
     | Suspended
-  [@@deriving sexp, compare, equal, hash, enumerate]
+  [@@deriving bin_io, sexp, compare, equal, hash, enumerate]
 end
 
 type t =
