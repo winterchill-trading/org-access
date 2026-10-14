@@ -1,1 +1,23 @@
-org-access
+("before verification" (Denied Verification_required))
+("after verification" (Allowed (role operator)))
+(opened (required 2))
+(olu (refused role_required))
+(bea (progress (Recorded (approvals 1) (required 2))))
+(bea (refused already_approved))
+(cal (progress Completed))
+ 1 ana  organisation_created
+ 2 ana  member_added
+ 3 ana  invitation_sent
+ 4 bea  member_added
+ 5 bea  invitation_accepted
+ 6 ana  invitation_sent
+ 7 cal  member_added
+ 8 cal  invitation_accepted
+ 9 ana  member_added
+10 olu  access_denied
+11 -    organisation_verified
+12 olu  approval_opened
+13 olu  access_denied
+14 bea  approval_approved
+15 cal  approval_approved
+(chain (Ok ()))
