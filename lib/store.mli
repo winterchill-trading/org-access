@@ -47,6 +47,7 @@ module type S = sig
     -> Note.t
     -> [ `Created | `Exists of Organisation.t ] io
 
+  (** The organisation's record. *)
   val organisation : t -> Org_id.t -> Organisation.t option io
 
   (** Replaces an organisation's record (name, status, verification); last writer wins. *)
@@ -79,7 +80,9 @@ module type S = sig
     -> Note.t
     -> [ `Ok | `Conflict ] io
 
+  (** One invitation by id. *)
   val invitation : t -> Invitation_id.t -> Invitation.t option io
+  (** The invitation whose current token has this hash. *)
   val invitation_by_token : t -> Token.Hash.t -> Invitation.t option io
 
   (** An organisation's invitations, every status, newest first. *)
@@ -100,6 +103,7 @@ module type S = sig
     -> Note.t
     -> [ `Ok | `Conflict ] io
 
+  (** One approval request by id. *)
   val approval : t -> Approval_id.t -> Approval.t option io
 
   (** An organisation's approvals, newest first, optionally with one status only. *)

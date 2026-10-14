@@ -64,6 +64,7 @@ val tiers : t -> Tier.t list
 (** The tiers of one currency, by threshold. *)
 val tiers_of : t -> Currency.t -> Tier.t list
 
+(** What a currency without tiers needs. *)
 val unlisted : t -> Unlisted.t
 
 (** Replaces one currency's tiers, with the checks of {!create}. *)

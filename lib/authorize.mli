@@ -23,6 +23,7 @@ module Decision : sig
     | Denied of Reason.t
   [@@deriving sexp, compare, equal]
 
+  (** [true] for [Allowed]. *)
   val is_allowed : t -> bool
 
   (** [Error] carries the reason as a sexp. *)

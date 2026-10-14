@@ -6,6 +6,7 @@ open! Core
 module Make (M : Monad.S) : sig
   include Store.S with type 'a io = 'a M.t
 
+  (** An empty store. *)
   val create : unit -> t
 
   (** Every organisation's full audit, by organisation then sequence number. *)

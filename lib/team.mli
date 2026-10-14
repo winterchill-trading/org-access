@@ -70,6 +70,7 @@ val found
   -> unit
   -> (t * Change.t list, Error.t) result
 
+(** The user's membership in this team. *)
 val find : t -> User_id.t -> Member.t option
 
 (** Members whose role holds the custodian permission. *)

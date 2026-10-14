@@ -122,6 +122,7 @@ module Make (M : Monad.S) (S : Store.S with type 'a io := 'a M.t) : sig
     -> unit
     -> (Member.t, Error.t) result M.t
 
+  (** Changes a member's role; setting the role they have writes nothing. *)
   val change_role
     :  Config.t
     -> S.t
@@ -142,6 +143,7 @@ module Make (M : Monad.S) (S : Store.S with type 'a io := 'a M.t) : sig
     -> at:Time_ns.t
     -> (unit, Error.t) result M.t
 
+  (** The member leaves the organisation; refused for the last custodian. *)
   val leave
     :  Config.t
     -> S.t
@@ -177,6 +179,7 @@ module Make (M : Monad.S) (S : Store.S with type 'a io := 'a M.t) : sig
     -> at:Time_ns.t
     -> (Invitation.t * Token.t, Error.t) result M.t
 
+  (** Revokes a pending invitation; revoking a revoked one writes nothing. *)
   val revoke
     :  Config.t
     -> S.t
@@ -239,6 +242,7 @@ module Make (M : Monad.S) (S : Store.S with type 'a io := 'a M.t) : sig
     -> unit
     -> (Approval.t, Error.t) result M.t
 
+  (** Records the user's approval; the result says whether the request is now approved. *)
   val approve
     :  Config.t
     -> S.t
@@ -250,6 +254,7 @@ module Make (M : Monad.S) (S : Store.S with type 'a io := 'a M.t) : sig
     -> unit
     -> (Approval.t * Approval.Progress.t, Error.t) result M.t
 
+  (** Ends a pending request as rejected. *)
   val reject
     :  Config.t
     -> S.t

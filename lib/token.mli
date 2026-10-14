@@ -29,7 +29,9 @@ module Hash : sig
 
   include Comparable.S with type t := t
 
+  (** The 64 hex characters. *)
   val to_hex : t -> string
+  (** Reads a stored hash; fails on anything but 64 lower-case hex characters. *)
   val of_hex : string -> t Or_error.t
 
   (** Versioned serializers whose bin_prot shape never changes. *)
@@ -40,6 +42,7 @@ module Hash : sig
   end
 end
 
+(** The hash to store and look the token up by. *)
 val hash : t -> Hash.t
 
 (** [matches t hash] compares in constant time. *)

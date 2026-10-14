@@ -68,6 +68,7 @@ module Digest : sig
   (** SHA-256, as 64 hex characters. *)
   type t [@@deriving sexp, compare, equal, hash]
 
+  (** The 64 hex characters. *)
   val to_hex : t -> string
 
   (** The [prev] of an organisation's first entry: the digest of its id, so two
