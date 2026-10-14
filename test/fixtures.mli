@@ -17,3 +17,6 @@ val email : string -> Email.t
 
 (** A member of {!org_id} with this user name (also the e-mail local part) and role. *)
 val member : ?org:Org_id.t -> string -> Role.t -> Member.t
+
+(** A deterministic token: the same seed gives the same token. *)
+val token : int -> Token.t

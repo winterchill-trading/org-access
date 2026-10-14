@@ -27,3 +27,7 @@ let member ?(org = org_id) name role =
     ()
   |> Or_error.ok_exn
 ;;
+
+let token seed =
+  Token.generate (fun n -> String.init n ~f:(fun j -> Char.of_int_exn ((seed + (7 * j)) land 0xff)))
+;;
