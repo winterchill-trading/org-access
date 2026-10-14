@@ -1,0 +1,6 @@
+(library
+ (name org_access)
+ (public_name org-access)
+ (libraries core money cryptokit)
+ (preprocess
+  (pps ppx_jane)))

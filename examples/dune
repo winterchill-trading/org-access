@@ -1,0 +1,16 @@
+; Examples are built with the rest of the project (and so in CI) but not installed.
+
+(executable
+ (name quick_start)
+ (libraries core org-access)
+ (preprocess
+  (pps ppx_jane)))
+
+(rule
+ (alias runtest)
+ (action
+  (progn
+   (with-stdout-to
+    quick_start.output
+    (run %{exe:quick_start.exe}))
+   (diff quick_start.expected quick_start.output))))
