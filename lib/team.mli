@@ -38,8 +38,7 @@ module Error : sig
     | Member_elsewhere of Org_id.t (** with [single_membership] *)
     | Not_member
     | Own_membership
-    | Last_custodian
-    (** the change would leave nobody holding the custodian permission *)
+    | Last_custodian (** the change would leave nobody holding the custodian permission *)
     | Invitation_not_accepted (** {!join} needs an accepted invitation for this user *)
     | Invalid of string
   [@@deriving sexp, compare, equal]

@@ -137,7 +137,8 @@ let found model (organisation : Organisation.t) ~email ?display_name ~at () =
          ()
      with
      | Error e -> invalid e
-     | Ok member -> Ok ({ organisation; members = [ member ]; version = 0 }, [ Change.Put member ]))
+     | Ok member ->
+       Ok ({ organisation; members = [ member ]; version = 0 }, [ Change.Put member ]))
 ;;
 
 let add
@@ -215,18 +216,27 @@ let leave model t ~user =
   | Some _ -> apply model t [ Remove user ]
 ;;
 
-let join ?(policy = Policy.default) model t ~(invitation : Invitation.t) ~user ~other_memberships ~at
+let join
+  ?(policy = Policy.default)
+  model
+  t
+  ~(invitation : Invitation.t)
+  ~user
+  ~other_memberships
+  ~at
   =
   let open Result.Let_syntax in
   let%bind () =
     match invitation.status, invitation.accepted_by with
     | Accepted, Some accepted_by
-      when User_id.equal accepted_by user && Org_id.equal invitation.org t.organisation.id ->
-      Ok ()
+      when User_id.equal accepted_by user && Org_id.equal invitation.org t.organisation.id
+      -> Ok ()
     | _ -> Error Error.Invitation_not_accepted
   in
   let%bind () = check_role model invitation.role in
-  let%bind () = if Option.is_some (find t user) then Error Error.Already_member else Ok () in
+  let%bind () =
+    if Option.is_some (find t user) then Error Error.Already_member else Ok ()
+  in
   let%bind () = check_elsewhere ~policy t ~other_memberships in
   let member : Member.t =
     { org = t.organisation.id

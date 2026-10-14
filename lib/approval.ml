@@ -170,12 +170,15 @@ let approve t model ~organisation ~membership ?note ~at () =
   let%bind () = check_scope t organisation in
   let%bind () = pending t in
   let%bind member = is_checker model ~organisation ~membership ~maker:t.maker t.action in
-  let%bind () = if has_approved t member.user then Error Error.Already_approved else Ok () in
+  let%bind () =
+    if has_approved t member.user then Error Error.Already_approved else Ok ()
+  in
   let%map note = check_note note in
   let approvals = t.approvals @ [ { Vote.by = member.user; at; note } ] in
   let count = List.length approvals in
   if count >= t.required
-  then { t with approvals; status = Approved; version = t.version + 1 }, Progress.Completed
+  then
+    { t with approvals; status = Approved; version = t.version + 1 }, Progress.Completed
   else
     ( { t with approvals; version = t.version + 1 }
     , Progress.Recorded { approvals = count; required = t.required } )
@@ -208,11 +211,7 @@ let cancel t model ~organisation ~membership ?override ?note ~at () =
       | None -> false
       | Some permission ->
         Authorize.Decision.is_allowed
-          (Authorize.decide
-             model
-             ~organisation
-             ~membership
-             (Action.requires permission))
+          (Authorize.decide model ~organisation ~membership (Action.requires permission))
     in
     if is_maker || may_override then Ok () else Error Error.Not_canceller
   in

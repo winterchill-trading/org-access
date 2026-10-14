@@ -8,8 +8,8 @@ open! Core
 type t =
   | Not_a_member (** the user belongs to no organisation *)
   | Other_organisation
-  (** the resource belongs to another organisation; answer as if it did not exist, so
-      ids from other organisations cannot be probed *)
+  (** the resource belongs to another organisation; answer as if it did not exist, so ids
+      from other organisations cannot be probed *)
   | Organisation_suspended
   | Unknown_role of Role.t
   (** the member's stored role is not in the model (a model changed without migrating

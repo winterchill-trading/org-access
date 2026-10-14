@@ -33,7 +33,8 @@ let roles =
        List.iter permissions ~f:(fun p ->
          line
            (Permission.to_string p)
-           (List.map roles ~f:(fun r -> if Role_model.allows model r p then "yes" else "-")));
+           (List.map roles ~f:(fun r ->
+              if Role_model.allows model r p then "yes" else "-")));
        printf "custodian: %s\n" (Permission.to_string (Role_model.custodian model)))
 ;;
 
@@ -52,7 +53,11 @@ let explain =
        let at = Time_ns.epoch in
        let org = Org_id.of_string "org" in
        let organisation =
-         Organisation.create ~id:org ~name:"Example" ~created_by:(User_id.of_string "u") ~at
+         Organisation.create
+           ~id:org
+           ~name:"Example"
+           ~created_by:(User_id.of_string "u")
+           ~at
          |> Or_error.ok_exn
          |> Fn.flip Organisation.set_verified verified
          |> Fn.flip Organisation.set_status (if suspended then Suspended else Active)
@@ -86,10 +91,7 @@ let required =
   Command.basic
     ~summary:"how many approvals a request moving these amounts needs"
     (let%map_open.Command policy =
-       flag
-         "policy"
-         (required string)
-         ~doc:"FILE approval policy as a sexp"
+       flag "policy" (required string) ~doc:"FILE approval policy as a sexp"
      and amounts = anon (non_empty_sequence_as_list ("AMOUNT" %: string)) in
      fun () ->
        let policy = Sexp.load_sexp_conv_exn policy Approval_policy.Stable.V1.t_of_sexp in

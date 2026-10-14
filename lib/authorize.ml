@@ -14,7 +14,8 @@ module Decision = struct
   let to_or_error = function
     | Allowed _ -> Ok ()
     | Denied reason ->
-      Or_error.error_s [%message "access denied" ~code:(Reason.code reason) (reason : Reason.t)]
+      Or_error.error_s
+        [%message "access denied" ~code:(Reason.code reason) (reason : Reason.t)]
   ;;
 end
 
@@ -49,7 +50,10 @@ let decide model ~(organisation : Organisation.t) ~membership (action : Action.t
         else
           Error
             (Reason.Permission_missing
-               { role; permission; required = Role_model.lowest_role_with model permission })
+               { role
+               ; permission
+               ; required = Role_model.lowest_role_with model permission
+               })
     in
     let%map () =
       if action.needs_verification && not organisation.verified

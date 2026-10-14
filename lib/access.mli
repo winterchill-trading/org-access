@@ -11,8 +11,8 @@
 
     A resource of another organisation is reported as [Not_found], like a missing one, so
     ids cannot be probed across organisations. Refusals for reasons of access (role,
-    verification, outsiders) are appended to the organisation's audit as
-    [Access_denied] when [audit_denials] is set. *)
+    verification, outsiders) are appended to the organisation's audit as [Access_denied]
+    when [audit_denials] is set. *)
 
 open! Core
 open Money
@@ -24,7 +24,8 @@ module Config : sig
     ; invitation_policy : Invitation.Policy.t
     ; new_token : unit -> Token.t (** {!Token.random} outside tests *)
     ; audit_denials : bool
-    ; max_attempts : int (** tries of a versioned write before giving up with [Conflict] *)
+    ; max_attempts : int
+    (** tries of a versioned write before giving up with [Conflict] *)
     }
 
   (** The default model and policies, random tokens, denials audited, three attempts. *)
@@ -63,8 +64,8 @@ module Make (M : Monad.S) (S : Store.S with type 'a io := 'a M.t) : sig
     -> unit
     -> (Team.t, Error.t) result M.t
 
-  (** Records the outcome of business verification. [actor] is [None] when it comes from
-      a verification provider. *)
+  (** Records the outcome of business verification. [actor] is [None] when it comes from a
+      verification provider. *)
   val set_verified
     :  S.t
     -> Org_id.t
@@ -85,10 +86,9 @@ module Make (M : Monad.S) (S : Store.S with type 'a io := 'a M.t) : sig
 
   (** {2 Decisions} *)
 
-  (** Loads the organisation and the user's memberships and decides. A refusal is
-      audited (see the module comment). An unknown organisation is [Denied
-      Other_organisation] for a user with a membership elsewhere, [Not_a_member]
-      otherwise. *)
+  (** Loads the organisation and the user's memberships and decides. A refusal is audited
+      (see the module comment). An unknown organisation is [Denied Other_organisation] for
+      a user with a membership elsewhere, [Not_a_member] otherwise. *)
   val authorize
     :  Config.t
     -> S.t
@@ -152,8 +152,8 @@ module Make (M : Monad.S) (S : Store.S with type 'a io := 'a M.t) : sig
 
   (** {2 Invitations} *)
 
-  (** Creates and stores an invitation; returns it with the token to put in the link
-      (the only time the token exists outside the e-mail). *)
+  (** Creates and stores an invitation; returns it with the token to put in the link (the
+      only time the token exists outside the e-mail). *)
   val invite
     :  Config.t
     -> S.t
@@ -186,8 +186,8 @@ module Make (M : Monad.S) (S : Store.S with type 'a io := 'a M.t) : sig
     -> at:Time_ns.t
     -> (Invitation.t, Error.t) result M.t
 
-  (** What a public invitation page shows before sign-in: [None] for anything but a
-      usable invitation, so the page cannot tell an expired link from a wrong one. *)
+  (** What a public invitation page shows before sign-in: [None] for anything but a usable
+      invitation, so the page cannot tell an expired link from a wrong one. *)
   val preview
     :  S.t
     -> token:Token.t
@@ -275,8 +275,8 @@ module Make (M : Monad.S) (S : Store.S with type 'a io := 'a M.t) : sig
 
   (** {2 Audit} *)
 
-  (** A page of the organisation's audit for a member holding [permission] (the
-      custodian permission by default). *)
+  (** A page of the organisation's audit for a member holding [permission] (the custodian
+      permission by default). *)
   val audit
     :  Config.t
     -> S.t

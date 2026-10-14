@@ -16,6 +16,7 @@
           ~permissions:[ manage_members; approve; create ]
           ~custodian:manage_members
           [ admin, All; approver, Only [ approve ]; operator, Only [ create ] ]
+      ;;
     ]} *)
 
 open! Core
@@ -29,8 +30,8 @@ end
 
 type t [@@deriving sexp_of, compare, equal]
 
-(** Builds a model. Fails when there are no roles, a role appears twice, a role's set names
-    an undeclared permission, or no role holds the custodian permission. *)
+(** Builds a model. Fails when there are no roles, a role appears twice, a role's set
+    names an undeclared permission, or no role holds the custodian permission. *)
 val create
   :  permissions:Permission.t list
   -> custodian:Permission.t

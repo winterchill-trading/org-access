@@ -88,8 +88,8 @@ module Entry : sig
   [@@deriving sexp, compare, equal]
 end
 
-(** The entry that follows [last] (the organisation's latest entry, [None] for the
-    first). Fails when [last] belongs to another organisation. *)
+(** The entry that follows [last] (the organisation's latest entry, [None] for the first).
+    Fails when [last] belongs to another organisation. *)
 val next
   :  last:Entry.t option
   -> org:Org_id.t
@@ -110,9 +110,9 @@ module Broken : sig
   [@@deriving sexp, compare, equal]
 end
 
-(** Checks a run of consecutive entries, oldest first. Without [after] the run must
-    start at the organisation's first entry; with it, the run continues that entry (for
-    checking a page at a time). *)
+(** Checks a run of consecutive entries, oldest first. Without [after] the run must start
+    at the organisation's first entry; with it, the run continues that entry (for checking
+    a page at a time). *)
 val verify : ?after:Entry.t -> Org_id.t -> Entry.t list -> (unit, Broken.t) result
 
 (** Versioned serializers whose bin_prot shape never changes. *)

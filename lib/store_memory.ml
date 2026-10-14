@@ -15,7 +15,7 @@ module Make (M : Monad.S) = struct
     ; approvals : Approval.t Approval_id.Table.t
     ; audit : Audit.Entry.t list Org_id.Table.t (* newest first *)
     ; mutable clock : int
-    (* insertion order, for "newest first" listings that do not depend on timestamps *)
+        (* insertion order, for "newest first" listings that do not depend on timestamps *)
     ; order : int String.Table.t
     }
 
@@ -97,10 +97,13 @@ module Make (M : Monad.S) = struct
       (match Hashtbl.find t.teams id with
        | Some row when row.version = expected_version ->
          row.members
-         <- List.fold changes ~init:row.members ~f:(fun members (change : Team.Change.t) ->
-              match change with
-              | Put m -> Map.set members ~key:m.user ~data:m
-              | Remove user -> Map.remove members user);
+         <- List.fold
+              changes
+              ~init:row.members
+              ~f:(fun members (change : Team.Change.t) ->
+                match change with
+                | Put m -> Map.set members ~key:m.user ~data:m
+                | Remove user -> Map.remove members user);
          row.version <- row.version + 1;
          append t id note;
          `Ok
@@ -200,8 +203,7 @@ module Make (M : Monad.S) = struct
   let approvals t org ~status =
     Hashtbl.data t.approvals
     |> List.filter ~f:(fun (a : Approval.t) ->
-      Org_id.equal a.org org
-      && Option.for_all status ~f:(Approval.Status.equal a.status))
+      Org_id.equal a.org org && Option.for_all status ~f:(Approval.Status.equal a.status))
     |> newest_first t (fun (a : Approval.t) -> approval_key a.id)
     |> M.return
   ;;

@@ -100,10 +100,10 @@ module Proof : sig
 end
 
 (** A new pending invitation for [email] with [role], sent now, whose link carries
-    [token]. [members] and [invitations] are the organisation's current members and
-    stored invitations (all statuses): the address must not belong to a member, must
-    have no pending invitation (expired or not), and the organisation must have fewer
-    than [max_pending] unexpired pending ones. *)
+    [token]. [members] and [invitations] are the organisation's current members and stored
+    invitations (all statuses): the address must not belong to a member, must have no
+    pending invitation (expired or not), and the organisation must have fewer than
+    [max_pending] unexpired pending ones. *)
 val create
   :  ?policy:Policy.t
   -> Role_model.t

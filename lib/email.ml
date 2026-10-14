@@ -5,8 +5,11 @@ let max_length = 254
 let check s =
   let length = String.length s in
   if length = 0 || length > max_length
-  then Or_error.error_s [%message "e-mail address must be 1 to 254 characters" (length : int)]
-  else if String.exists s ~f:(fun c -> Char.is_whitespace c || Char.to_int c < 0x20 || Char.to_int c = 0x7f)
+  then
+    Or_error.error_s
+      [%message "e-mail address must be 1 to 254 characters" (length : int)]
+  else if String.exists s ~f:(fun c ->
+            Char.is_whitespace c || Char.to_int c < 0x20 || Char.to_int c = 0x7f)
   then Or_error.error_string "e-mail address has whitespace or a control character"
   else (
     match String.split s ~on:'@' with

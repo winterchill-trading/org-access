@@ -117,14 +117,25 @@ let next ~(last : Entry.t option) ~org ~at ~actor event =
   match last with
   | Some l when not (Org_id.equal l.org org) ->
     Or_error.error_s
-      [%message "audit entry of another organisation" ~expected:(org : Org_id.t) ~got:(l.org : Org_id.t)]
+      [%message
+        "audit entry of another organisation"
+          ~expected:(org : Org_id.t)
+          ~got:(l.org : Org_id.t)]
   | _ ->
     let seq, prev =
       match last with
       | None -> 1, Digest.genesis org
       | Some l -> l.seq + 1, l.digest
     in
-    Ok { Entry.org; seq; at; actor; event; prev; digest = digest_of ~org ~seq ~at ~actor ~event ~prev }
+    Ok
+      { Entry.org
+      ; seq
+      ; at
+      ; actor
+      ; event
+      ; prev
+      ; digest = digest_of ~org ~seq ~at ~actor ~event ~prev
+      }
 ;;
 
 module Broken = struct
@@ -154,11 +165,16 @@ let verify ?after org entries =
       then Error (Broken.Gap { expected = seq; found = e.seq })
       else if not (Digest.equal e.prev prev)
       then Error (Broken.Prev_mismatch { seq })
-      else if
-        not
-          (Digest.equal
-             e.digest
-             (digest_of ~org ~seq ~at:e.at ~actor:e.actor ~event:e.event ~prev:e.prev))
+      else if not
+                (Digest.equal
+                   e.digest
+                   (digest_of
+                      ~org
+                      ~seq
+                      ~at:e.at
+                      ~actor:e.actor
+                      ~event:e.event
+                      ~prev:e.prev))
       then Error (Broken.Digest_mismatch { seq })
       else go ~seq:(seq + 1) ~prev:e.digest rest
   in

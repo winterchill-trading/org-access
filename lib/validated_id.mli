@@ -1,8 +1,8 @@
 (** Identifiers checked once, at the edge.
 
     An id is 1 to {!max_length} characters from [A-Z a-z 0-9 _ - . :]. That covers UUIDs,
-    prefixed ids such as [usr_01H...] and namespaced ids such as [tenant:42], while keeping
-    every id safe to print in a log line or an audit record without quoting. *)
+    prefixed ids such as [usr_01H...] and namespaced ids such as [tenant:42], while
+    keeping every id safe to print in a log line or an audit record without quoting. *)
 
 open! Core
 

@@ -81,9 +81,7 @@ let () =
   in
   (* Money actions wait for business verification. *)
   let create = Action.requires_verified D.create_payments in
-  let decide () =
-    Ops.authorize config store ~user:(user "olu") ~org create ~at:(at 7)
-  in
+  let decide () = Ops.authorize config store ~user:(user "olu") ~org create ~at:(at 7) in
   print_s [%message "before verification" ~_:(decide () : Authorize.Decision.t)];
   let (_ : Organisation.t) =
     Ops.set_verified store org true ~actor:None ~at:(at 8) |> ok
@@ -110,14 +108,7 @@ let () =
   print_s [%message "opened" ~required:(approval.required : int)];
   List.iter [ "olu"; "bea"; "bea"; "cal" ] ~f:(fun name ->
     match
-      Ops.approve
-        config
-        store
-        ~user:(user name)
-        ~org
-        ~id:approval.id
-        ~at:(at 10)
-        ()
+      Ops.approve config store ~user:(user name) ~org ~id:approval.id ~at:(at 10) ()
     with
     | Ok (_, progress) -> print_s [%message name (progress : Approval.Progress.t)]
     | Error e -> print_s [%message name ~refused:(Access.Error.code e : string)]);

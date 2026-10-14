@@ -45,7 +45,8 @@ let check_currency ~base (tiers : Tier.t list) =
     | [] -> Ok ()
     | (tier : Tier.t) :: rest ->
       if Amount.compare tier.above prev.above <= 0
-      then Or_error.error_s [%message "duplicate threshold" ~above:(tier.above : Amount.t)]
+      then
+        Or_error.error_s [%message "duplicate threshold" ~above:(tier.above : Amount.t)]
       else if tier.required < prev.required
       then
         Or_error.error_s
@@ -103,7 +104,8 @@ let tiers t = t.tiers
 let unlisted t = t.unlisted
 
 let tiers_of t currency =
-  List.filter t.tiers ~f:(fun tier -> Currency.equal (Amount.currency tier.above) currency)
+  List.filter t.tiers ~f:(fun tier ->
+    Currency.equal (Amount.currency tier.above) currency)
 ;;
 
 let set_tiers t currency tiers =
@@ -148,8 +150,7 @@ let required_for t amounts =
   List.map amounts ~f:Amount.abs
   |> List.sort_and_group ~compare:(fun a b ->
     Currency.compare (Amount.currency a) (Amount.currency b))
-  |> List.map ~f:(fun group ->
-    List.reduce_exn group ~f:Amount.add_exn |> required t)
+  |> List.map ~f:(fun group -> List.reduce_exn group ~f:Amount.add_exn |> required t)
   |> List.fold ~init:t.base ~f:Int.max
 ;;
 

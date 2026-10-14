@@ -44,8 +44,7 @@ let create ~permissions ~custodian roles =
     List.concat_map roles ~f:(fun (role, grants) ->
       match grants with
       | All -> []
-      | Only l ->
-        List.filter l ~f:(Fn.non declared) |> List.map ~f:(fun p -> role, p))
+      | Only l -> List.filter l ~f:(Fn.non declared) |> List.map ~f:(fun p -> role, p))
   in
   if List.is_empty roles
   then Or_error.error_string "role model has no roles"
@@ -155,7 +154,9 @@ let default =
 
 module Stable = struct
   module V1 = struct
-    let of_repr (r : Repr.t) = create_exn ~permissions:r.permissions ~custodian:r.custodian r.roles
+    let of_repr (r : Repr.t) =
+      create_exn ~permissions:r.permissions ~custodian:r.custodian r.roles
+    ;;
 
     module T = struct
       type nonrec t = t [@@deriving compare, equal]

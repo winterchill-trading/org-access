@@ -8,17 +8,17 @@
 
     - Each write that changes access state takes the audit {!Note} describing it and
       appends those entries in the same atomic step, chained after the organisation's
-      latest entry with {!Audit.next}. A change is never stored without its audit, and
-      the audit is never edited or deleted.
+      latest entry with {!Audit.next}. A change is never stored without its audit, and the
+      audit is never edited or deleted.
     - Team, invitation and approval updates are compare-and-set on a version: the write
-      happens only if the stored version is still [expected_version], and then the
-      stored version becomes [expected_version + 1] (teams) or the new value's [version]
+      happens only if the stored version is still [expected_version], and then the stored
+      version becomes [expected_version + 1] (teams) or the new value's [version]
       (invitations and approvals). Otherwise nothing is written and the answer is
-      [`Conflict]. That is what stops two concurrent approvals from both being counted
-      as the last one, or two administrators from demoting each other.
-    - Inserting an invitation fails with [`Duplicate] when its id or token hash exists,
-      or when the organisation already has a [Pending] invitation for the address.
-      Inserting an approval fails with [`Duplicate] when its id exists. *)
+      [`Conflict]. That is what stops two concurrent approvals from both being counted as
+      the last one, or two administrators from demoting each other.
+    - Inserting an invitation fails with [`Duplicate] when its id or token hash exists, or
+      when the organisation already has a [Pending] invitation for the address. Inserting
+      an approval fails with [`Duplicate] when its id exists. *)
 
 open! Core
 
@@ -38,8 +38,8 @@ module type S = sig
 
   (** {2 Organisations and teams} *)
 
-  (** Stores a new organisation and its founding member (team version 0). [`Exists]
-      when the id is taken, with the stored organisation. *)
+  (** Stores a new organisation and its founding member (team version 0). [`Exists] when
+      the id is taken, with the stored organisation. *)
   val create_organisation
     :  t
     -> Organisation.t

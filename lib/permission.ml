@@ -5,10 +5,9 @@ let check_segment segment =
   then Or_error.error_string "permission has an empty segment"
   else if not (Char.is_lowercase segment.[0])
   then Or_error.error_string "permission segment must start with a lower-case letter"
-  else if
-    not
-      (String.for_all segment ~f:(fun c ->
-         Char.is_lowercase c || Char.is_digit c || Char.equal c '_'))
+  else if not
+            (String.for_all segment ~f:(fun c ->
+               Char.is_lowercase c || Char.is_digit c || Char.equal c '_'))
   then Or_error.error_string "permission has a character outside [a-z0-9_.]"
   else Ok ()
 ;;

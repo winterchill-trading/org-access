@@ -2,6 +2,7 @@ open! Core
 
 let byte_length = 32
 let hex_length = 2 * byte_length
+
 let is_hex = function
   | '0' .. '9' | 'a' .. 'f' -> true
   | _ -> false
@@ -22,13 +23,16 @@ let sexp_of_t _ = Sexp.Atom "<secret>"
 let generate random_bytes =
   let bytes = random_bytes byte_length in
   if String.length bytes <> byte_length
-  then raise_s [%message "random source returned the wrong length" ~length:(String.length bytes : int)];
+  then
+    raise_s
+      [%message
+        "random source returned the wrong length" ~length:(String.length bytes : int)];
   to_hex bytes
 ;;
 
 let random () =
-  (* Cryptokit's [system_rng] is Windows-only and raises on Unix; read the kernel's
-     CSPRNG directly. *)
+  (* Cryptokit's [system_rng] is Windows-only and raises on Unix; read the kernel's CSPRNG
+     directly. *)
   let rng = Cryptokit.Random.device_rng "/dev/urandom" in
   Exn.protect
     ~f:(fun () -> generate (fun n -> Cryptokit.Random.string rng n))
@@ -36,7 +40,6 @@ let random () =
 ;;
 
 let to_string t = t
-
 let of_string s = Or_error.tag (check_hex s) ~tag:"Org_access.Token"
 
 module Hash = struct
@@ -77,6 +80,6 @@ let matches t h =
   and b = Hash.to_hex h in
   String.length a = String.length b
   && String.foldi a ~init:0 ~f:(fun i acc c ->
-    acc lor (Char.to_int c lxor Char.to_int b.[i]))
+       acc lor (Char.to_int c lxor Char.to_int b.[i]))
      = 0
 ;;

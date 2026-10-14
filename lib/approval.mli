@@ -67,8 +67,7 @@ module Error : sig
     | Not_enough_approvers of
         { required : int
         ; eligible : int
-        }
-    (** fewer members than [required], maker excluded, could ever approve *)
+        } (** fewer members than [required], maker excluded, could ever approve *)
     | Not_canceller (** cancelling needs the maker or the override permission *)
     | Invalid of string (** a subject or note out of bounds *)
   [@@deriving sexp, compare, equal]
@@ -136,8 +135,8 @@ val reject
   -> (t, Error.t) result
 
 (** Ends a pending request as [Cancelled]. Allowed to the maker, and to a member whose
-    role holds [override] (for example a team administrator cleaning up after a maker
-    who left), both while a member of [organisation]. *)
+    role holds [override] (for example a team administrator cleaning up after a maker who
+    left), both while a member of [organisation]. *)
 val cancel
   :  t
   -> Role_model.t

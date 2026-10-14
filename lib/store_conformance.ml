@@ -68,7 +68,11 @@ module Make (M : Monad.S) (Store : Store.S with type 'a io := 'a M.t) = struct
     let failures = Queue.create () in
     let expect ok what sexp = if not ok then Queue.enqueue failures (what, sexp) in
     let organisation =
-      Organisation.create ~id:org_id ~name:"Conformance Ltd" ~created_by:(user "ana") ~at:t0
+      Organisation.create
+        ~id:org_id
+        ~name:"Conformance Ltd"
+        ~created_by:(user "ana")
+        ~at:t0
       |> Or_error.ok_exn
     in
     let ana = member "ana" admin in
@@ -175,8 +179,12 @@ module Make (M : Monad.S) (Store : Store.S with type 'a io := 'a M.t) = struct
       "invitation_by_token"
       [%sexp (by_token : Invitation.t option)];
     let revoked = { i1 with status = Revoked; closed_at = Some t0; version = 1 } in
-    let%bind u1 = Store.update_invitation store revoked ~expected_version:0 (note [ event "i2" ]) in
-    let%bind u2 = Store.update_invitation store revoked ~expected_version:0 (note [ event "x" ]) in
+    let%bind u1 =
+      Store.update_invitation store revoked ~expected_version:0 (note [ event "i2" ])
+    in
+    let%bind u2 =
+      Store.update_invitation store revoked ~expected_version:0 (note [ event "x" ])
+    in
     expect
       (Poly.equal u1 `Ok && Poly.equal u2 `Conflict)
       "invitation compare-and-set"
@@ -188,7 +196,9 @@ module Make (M : Monad.S) (Store : Store.S with type 'a io := 'a M.t) = struct
       "a revoked invitation frees the address"
       [%sexp "expected `Ok"];
     let i5 = invitation ~id:"inv-5" ~seed:5 ~who:"eve" in
-    let%bind (_ : [ `Ok | `Duplicate ]) = Store.insert_invitation store i5 (note [ event "i5" ]) in
+    let%bind (_ : [ `Ok | `Duplicate ]) =
+      Store.insert_invitation store i5 (note [ event "i5" ])
+    in
     let%bind listed = Store.invitations store org_id in
     expect
       (List.equal
@@ -207,7 +217,9 @@ module Make (M : Monad.S) (Store : Store.S with type 'a io := 'a M.t) = struct
     let a2 = approval ~id:"apr-2" in
     let%bind ra = Store.insert_approval store a1 (note [ event "a1" ]) in
     let%bind rdup = Store.insert_approval store a1 (note [ event "x" ]) in
-    let%bind (_ : [ `Ok | `Duplicate ]) = Store.insert_approval store a2 (note [ event "a2" ]) in
+    let%bind (_ : [ `Ok | `Duplicate ]) =
+      Store.insert_approval store a2 (note [ event "a2" ])
+    in
     let voted =
       { a1 with
         approvals = [ { by = user "ana"; at = t0; note = None } ]
@@ -215,8 +227,12 @@ module Make (M : Monad.S) (Store : Store.S with type 'a io := 'a M.t) = struct
       ; version = 1
       }
     in
-    let%bind c1 = Store.update_approval store voted ~expected_version:0 (note [ event "a3" ]) in
-    let%bind c2 = Store.update_approval store voted ~expected_version:0 (note [ event "x" ]) in
+    let%bind c1 =
+      Store.update_approval store voted ~expected_version:0 (note [ event "a3" ])
+    in
+    let%bind c2 =
+      Store.update_approval store voted ~expected_version:0 (note [ event "x" ])
+    in
     expect
       (Poly.equal ra `Ok
        && Poly.equal rdup `Duplicate

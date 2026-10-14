@@ -7,13 +7,14 @@
     tier:
 
     {[
-      Approval_policy.create_exn ~base:1
+      Approval_policy.create_exn
+        ~base:1
         [ { above = Amount.of_string "10000.00 EUR"; required = 2 } ]
     ]}
 
     Thresholds are compared in the amount's own currency, never converted: a policy that
-    wants a single limit across currencies lists one tier per currency, which also keeps
-    a decision independent of exchange rates that move between the request and the last
+    wants a single limit across currencies lists one tier per currency, which also keeps a
+    decision independent of exchange rates that move between the request and the last
     approval. A request in several currencies (a batch of payments) needs the largest
     count any of its per-currency totals needs. *)
 
@@ -22,7 +23,8 @@ open Money
 
 module Tier : sig
   type t =
-    { above : Amount.t (** compared with [>]: an amount equal to it does not need [required] *)
+    { above : Amount.t
+    (** compared with [>]: an amount equal to it does not need [required] *)
     ; required : int
     }
   [@@deriving sexp, compare, equal]
@@ -39,8 +41,8 @@ end
 type t [@@deriving sexp_of, compare, equal]
 
 (** Fails when [base < 1], a threshold is negative, a tier asks for fewer than [base], or
-    within one currency the thresholds are not strictly increasing or the counts
-    decrease. Tiers may be given in any order. [unlisted] defaults to [Base]. *)
+    within one currency the thresholds are not strictly increasing or the counts decrease.
+    Tiers may be given in any order. [unlisted] defaults to [Base]. *)
 val create : ?unlisted:Unlisted.t -> base:int -> Tier.t list -> t Or_error.t
 
 (** [create] that raises. *)

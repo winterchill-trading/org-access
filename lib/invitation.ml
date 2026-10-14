@@ -194,8 +194,8 @@ let accept t ~(proof : Proof.t) ~user ~email ~at =
         | Token token -> Token.matches token t.token_hash
         | Verified_email -> true
       in
-      (* The token is checked before the address so a wrong link does not reveal
-         which address it was meant for. *)
+      (* The token is checked before the address so a wrong link does not reveal which
+         address it was meant for. *)
       if not proof_holds
       then Error Error.Wrong_token
       else if not (Email.equal email t.email)

@@ -2,8 +2,8 @@
     organisation?
 
     {!decide} is a pure function of its arguments, with no clock, store or randomness, so
-    a decision can be replayed from the audit and tested exhaustively. The checks run in
-    a fixed order and the first failure is the reason:
+    a decision can be replayed from the audit and tested exhaustively. The checks run in a
+    fixed order and the first failure is the reason:
 
     + the user has a membership ([Not_a_member]);
     + the membership is in the resource's organisation ([Other_organisation]);
@@ -12,8 +12,8 @@
     + the role holds the action's permission, if it names one ([Permission_missing]);
     + the organisation is verified, if the action needs it ([Verification_required]).
 
-    Membership comes before everything else so that a user outside the organisation
-    learns nothing about it, not even that it is suspended. *)
+    Membership comes before everything else so that a user outside the organisation learns
+    nothing about it, not even that it is suspended. *)
 
 open! Core
 

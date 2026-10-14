@@ -6,7 +6,9 @@ let collapse_whitespace s =
   |> String.concat ~sep:" "
 ;;
 
-let has_control s = String.exists s ~f:(fun c -> Char.to_int c < 0x20 || Char.to_int c = 0x7f)
+let has_control s =
+  String.exists s ~f:(fun c -> Char.to_int c < 0x20 || Char.to_int c = 0x7f)
+;;
 
 let check ~what ~max raw =
   let s = collapse_whitespace raw in

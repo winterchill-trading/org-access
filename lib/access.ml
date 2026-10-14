@@ -97,9 +97,7 @@ module Make (M : Monad.S) (S : Store.S with type 'a io := 'a M.t) = struct
   let denied config s ~org ~user ~at action (e : Error.t) =
     let reason =
       match e with
-      | Denied r
-      | Team (Denied r)
-      | Approval (Denied r) -> Some r
+      | Denied r | Team (Denied r) | Approval (Denied r) -> Some r
       | _ -> None
     in
     match reason with
@@ -123,8 +121,7 @@ module Make (M : Monad.S) (S : Store.S with type 'a io := 'a M.t) = struct
     ()
     =
     match Organisation.create ~id ~name ~created_by:creator ~at with
-    | Error e ->
-      return (Error (Error.Team (Invalid (Core.Error.to_string_hum e))))
+    | Error e -> return (Error (Error.Team (Invalid (Core.Error.to_string_hum e))))
     | Ok organisation ->
       let*? team, _changes =
         Team.found config.model organisation ~email ?display_name ~at ()
@@ -228,7 +225,9 @@ module Make (M : Monad.S) (S : Store.S with type 'a io := 'a M.t) = struct
       Team.of_members config.model t.organisation t.members ~version:t.version)
   ;;
 
-  let custodian_action (config : Config.t) = Action.requires (Role_model.custodian config.model)
+  let custodian_action (config : Config.t) =
+    Action.requires (Role_model.custodian config.model)
+  ;;
 
   let team config s ~user ~org ~at =
     let*! (_ : Organisation.t) = require config s ~user ~org Action.read ~at in
@@ -267,10 +266,10 @@ module Make (M : Monad.S) (S : Store.S with type 'a io := 'a M.t) = struct
   ;;
 
   let team_error r = Result.map_error r ~f:(fun e -> Error.Team e)
-
   let other_memberships s user = S.memberships s user
 
-  let add_member (config : Config.t) s ~actor ~org ~user ~email ?display_name ~role ~at () =
+  let add_member (config : Config.t) s ~actor ~org ~user ~email ?display_name ~role ~at ()
+    =
     let%bind actor_m = membership_for s ~user:actor ~org in
     team_write config s ~org ~actor ~at ~action:(custodian_action config) (fun team ->
       let%map others = other_memberships s user in
@@ -290,7 +289,10 @@ module Make (M : Monad.S) (S : Store.S with type 'a io := 'a M.t) = struct
         |> team_error
       in
       let member = Option.value_exn (Team.find team' user) in
-      team', changes, member, [ Audit.Event.Member_added { user; role; invitation = None } ])
+      ( team'
+      , changes
+      , member
+      , [ Audit.Event.Member_added { user; role; invitation = None } ] ))
   ;;
 
   let change_role (config : Config.t) s ~actor ~org ~user ~role ~at =
@@ -330,7 +332,9 @@ module Make (M : Monad.S) (S : Store.S with type 'a io := 'a M.t) = struct
     team_write config s ~org ~actor:user ~at ~action:Action.read (fun team ->
       let role = Option.map (Team.find team user) ~f:(fun m -> m.role) in
       return
-        (let%map.Result team', changes = Team.leave config.model team ~user |> team_error in
+        (let%map.Result team', changes =
+           Team.leave config.model team ~user |> team_error
+         in
          let events =
            match role with
            | Some role -> [ Audit.Event.Member_removed { user; role; left = true } ]
@@ -477,7 +481,10 @@ module Make (M : Monad.S) (S : Store.S with type 'a io := 'a M.t) = struct
                         ~at
                         ~actor:(Some user)
                         [ Member_added
-                            { user; role = invitation.role; invitation = Some invitation.id }
+                            { user
+                            ; role = invitation.role
+                            ; invitation = Some invitation.id
+                            }
                         ])
                  with
                  | `Ok -> `Done (Ok (Option.value_exn (Team.find team' user)))
@@ -532,7 +539,13 @@ module Make (M : Monad.S) (S : Store.S with type 'a io := 'a M.t) = struct
     ()
     =
     let*! organisation =
-      require config s ~user:maker ~org (Option.value maker_action ~default:Action.read) ~at
+      require
+        config
+        s
+        ~user:maker
+        ~org
+        (Option.value maker_action ~default:Action.read)
+        ~at
     in
     match%bind load_team config s org with
     | None -> return (Error Error.Not_found)
@@ -561,7 +574,10 @@ module Make (M : Monad.S) (S : Store.S with type 'a io := 'a M.t) = struct
               ~at
               ~actor:(Some maker)
               [ Approval_opened
-                  { approval = id; subject = approval.subject; required = approval.required }
+                  { approval = id
+                  ; subject = approval.subject
+                  ; required = approval.required
+                  }
               ])
        with
        | `Ok -> Ok approval
@@ -607,7 +623,10 @@ module Make (M : Monad.S) (S : Store.S with type 'a io := 'a M.t) = struct
       ( a'
       , (a', progress)
       , [ Audit.Event.Approval_approved
-            { approval = id; approvals = List.length a'.approvals; required = a'.required }
+            { approval = id
+            ; approvals = List.length a'.approvals
+            ; required = a'.required
+            }
         ] ))
   ;;
 
@@ -636,7 +655,9 @@ module Make (M : Monad.S) (S : Store.S with type 'a io := 'a M.t) = struct
   ;;
 
   let audit (config : Config.t) s ~user ~org ?permission ~after ~limit ~at () =
-    let permission = Option.value permission ~default:(Role_model.custodian config.model) in
+    let permission =
+      Option.value permission ~default:(Role_model.custodian config.model)
+    in
     let*! (_ : Organisation.t) =
       require config s ~user ~org (Action.requires permission) ~at
     in
