@@ -11,7 +11,13 @@ val at : int -> Time_ns.t
 
 val org_id : Org_id.t
 val other_org_id : Org_id.t
-val organisation : ?verified:bool -> ?status:Organisation.Status.t -> unit -> Organisation.t
+
+val organisation
+  :  ?verified:bool
+  -> ?status:Organisation.Status.t
+  -> unit
+  -> Organisation.t
+
 val user : string -> User_id.t
 val email : string -> Email.t
 

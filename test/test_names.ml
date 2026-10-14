@@ -127,7 +127,10 @@ let%expect_test "e-mail addresses" =
 ;;
 
 let%expect_test "text fields" =
-  let t s = print_s [%sexp (Text.check_optional ~what:"name" ~max:10 s : string option Or_error.t)] in
+  let t s =
+    print_s
+      [%sexp (Text.check_optional ~what:"name" ~max:10 s : string option Or_error.t)]
+  in
   t "  Ana   \t Lopez ";
   t "   ";
   t "Ana Lopez Garcia";

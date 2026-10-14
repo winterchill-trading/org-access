@@ -11,9 +11,9 @@ let show d =
   print_s
     [%sexp
       (d : Authorize.Decision.t)
-      , (match d with
-         | Allowed _ -> "allowed"
-         | Denied r -> Reason.code r
+      , ((match d with
+          | Allowed _ -> "allowed"
+          | Denied r -> Reason.code r)
          : string)]
 ;;
 

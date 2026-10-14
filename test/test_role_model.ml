@@ -36,7 +36,9 @@ let%expect_test "lowest role holding a permission" =
     ~f:(fun p ->
       print_s
         [%message
-          "" ~_:(p : Permission.t) ~_:(Role_model.lowest_role_with model p : Role.t option)]);
+          ""
+            ~_:(p : Permission.t)
+            ~_:(Role_model.lowest_role_with model p : Role.t option)]);
   (* An undeclared permission is held only by [All] roles. *)
   let undeclared = Permission.of_string "something.else" in
   print_s [%sexp (Role_model.lowest_role_with model undeclared : Role.t option)];

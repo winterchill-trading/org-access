@@ -8,8 +8,8 @@ let%expect_test "the in-memory store passes the conformance suite" =
   [%expect {| (Ok ()) |}]
 ;;
 
-(* A store that forgets the version check must fail the suite: the suite is only useful
-   if it catches the bug it exists for. *)
+(* A store that forgets the version check must fail the suite: the suite is only useful if
+   it catches the bug it exists for. *)
 module Lossy = struct
   include Memory
 

@@ -33,7 +33,9 @@ let open_ ?(maker = olu) ?(members = team) amounts =
 let show_error e = print_s [%message (e : Approval.Error.t) ~code:(Approval.Error.code e)]
 
 let approve ?note t m =
-  match Approval.approve t model ~organisation:org ~membership:(Some m) ?note ~at:(at 5) () with
+  match
+    Approval.approve t model ~organisation:org ~membership:(Some m) ?note ~at:(at 5) ()
+  with
   | Ok (t, progress) ->
     print_s [%sexp (progress : Approval.Progress.t)];
     t
@@ -44,12 +46,14 @@ let approve ?note t m =
 
 let%expect_test "two distinct checkers above the threshold" =
   let t = open_ [ "6000.00 EUR"; "6000.00 EUR" ] |> Result.ok |> Option.value_exn in
-  print_s [%message "" ~required:(t.required : int) ~remaining:(Approval.remaining t : int)];
+  print_s
+    [%message "" ~required:(t.required : int) ~remaining:(Approval.remaining t : int)];
   let t = approve t olu in
   let t = approve t vic in
   let t = approve t bea in
   let t = approve t bea in
-  print_s [%sexp (Approval.can_approve t model ~organisation:org ~membership:(Some cal) : bool)];
+  print_s
+    [%sexp (Approval.can_approve t model ~organisation:org ~membership:(Some cal) : bool)];
   let t = approve ~note:"  checked   the invoices " t cal in
   let t = approve t ana in
   print_s [%sexp (t : Approval.t)];
@@ -86,8 +90,7 @@ let%expect_test "an admin who makes a request cannot check it" =
   let t = open_ ~maker:ana [ "50.00 EUR" ] |> Result.ok |> Option.value_exn in
   let t = approve t ana in
   let (_ : Approval.t) = approve t bea in
-  [%expect
-    {|
+  [%expect {|
     ((e Own_request) (code own_request))
     Completed
     |}]
@@ -120,8 +123,7 @@ let%expect_test "unverified organisation" =
     ~at:(at 1)
     ()
   |> Result.iter_error ~f:show_error;
-  [%expect
-    {| ((e (Denied Verification_required)) (code verification_required)) |}]
+  [%expect {| ((e (Denied Verification_required)) (code verification_required)) |}]
 ;;
 
 let%expect_test "reject and cancel" =
@@ -131,7 +133,9 @@ let%expect_test "reject and cancel" =
     | Ok (t : Approval.t) ->
       print_s
         [%message
-          "" ~status:(t.status : Approval.Status.t) ~decision:(t.decision : Approval.Vote.t option)]
+          ""
+            ~status:(t.status : Approval.Status.t)
+            ~decision:(t.decision : Approval.Vote.t option)]
     | Error e -> show_error e
   in
   let t1 = approve t bea in

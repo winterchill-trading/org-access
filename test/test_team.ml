@@ -51,10 +51,36 @@ let%expect_test "found, add, change role, remove" =
   show (add t ~by:"bea" "cal" D.viewer);
   show (add t ~by:"ana" "bea" D.viewer);
   show (add t ~by:"ana" "cal" (Role.of_string "owner"));
-  show (Team.change_role model t ~actor:(Team.find t (user "ana")) ~user:(user "ana") ~role:D.viewer);
-  show (Team.change_role model t ~actor:(Team.find t (user "ana")) ~user:(user "zed") ~role:D.viewer);
-  show (Team.change_role model t ~actor:(Team.find t (user "ana")) ~user:(user "bea") ~role:D.approver);
-  let t = ok (Team.change_role model t ~actor:(Team.find t (user "ana")) ~user:(user "bea") ~role:D.admin) in
+  show
+    (Team.change_role
+       model
+       t
+       ~actor:(Team.find t (user "ana"))
+       ~user:(user "ana")
+       ~role:D.viewer);
+  show
+    (Team.change_role
+       model
+       t
+       ~actor:(Team.find t (user "ana"))
+       ~user:(user "zed")
+       ~role:D.viewer);
+  show
+    (Team.change_role
+       model
+       t
+       ~actor:(Team.find t (user "ana"))
+       ~user:(user "bea")
+       ~role:D.approver);
+  let t =
+    ok
+      (Team.change_role
+         model
+         t
+         ~actor:(Team.find t (user "ana"))
+         ~user:(user "bea")
+         ~role:D.admin)
+  in
   show (Ok (t, []));
   show (Team.remove model t ~actor:(Team.find t (user "bea")) ~user:(user "zed"));
   show (Team.remove model t ~actor:(Team.find t (user "bea")) ~user:(user "ana"));
@@ -83,7 +109,15 @@ let%expect_test "found, add, change role, remove" =
 let%expect_test "the last administrator stays" =
   let t = ok (add founded ~by:"ana" "bea" D.admin) in
   (* Bea demotes Ana: fine, Bea is still an administrator. *)
-  let t = ok (Team.change_role model t ~actor:(Team.find t (user "bea")) ~user:(user "ana") ~role:D.viewer) in
+  let t =
+    ok
+      (Team.change_role
+         model
+         t
+         ~actor:(Team.find t (user "bea"))
+         ~user:(user "ana")
+         ~role:D.viewer)
+  in
   show (Team.leave model t ~user:(user "bea"));
   show (Team.leave model t ~user:(user "ana"));
   show (Team.leave model t ~user:(user "zed"));
@@ -130,7 +164,12 @@ let%expect_test "join from an accepted invitation" =
   in
   show (join inv);
   let accepted =
-    Invitation.accept inv ~proof:Verified_email ~user:(user "bea") ~email:(email "bea") ~at:(at 1)
+    Invitation.accept
+      inv
+      ~proof:Verified_email
+      ~user:(user "bea")
+      ~email:(email "bea")
+      ~at:(at 1)
     |> Result.ok
     |> Option.value_exn
   in
@@ -148,8 +187,8 @@ let%expect_test "join from an accepted invitation" =
 ;;
 
 (* Random administrators add, re-role and remove random users, and members leave. The
-   organisation never ends up without a custodian, versions grow by one per applied
-   change set, and no user appears twice. *)
+   organisation never ends up without a custodian, versions grow by one per applied change
+   set, and no user appears twice. *)
 let%test_unit "a custodian always remains" =
   let names = [ "ana"; "bea"; "cal"; "dan"; "eli" ] in
   let roles = Role_model.roles model in

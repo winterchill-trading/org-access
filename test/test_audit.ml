@@ -28,7 +28,9 @@ let%expect_test "a chain and its checks" =
       (Audit.Event.kind e.event)
       (String.prefix (Audit.Digest.to_hex e.digest) 12)
       (String.prefix (Audit.Digest.to_hex e.prev) 12));
-  let verify ?after l = print_s [%sexp (Audit.verify ?after org_id l : (unit, Audit.Broken.t) result)] in
+  let verify ?after l =
+    print_s [%sexp (Audit.verify ?after org_id l : (unit, Audit.Broken.t) result)]
+  in
   verify entries;
   verify ~after:(List.nth_exn entries 1) (List.drop entries 2);
   verify (List.drop entries 1);
@@ -37,7 +39,10 @@ let%expect_test "a chain and its checks" =
   verify
     (List.mapi entries ~f:(fun i e ->
        if i = 2
-       then { e with event = Role_changed { user = user "bea"; from = D.approver; to_ = D.viewer } }
+       then
+         { e with
+           event = Role_changed { user = user "bea"; from = D.approver; to_ = D.viewer }
+         }
        else e));
   verify
     (List.mapi entries ~f:(fun i (e : Audit.Entry.t) ->

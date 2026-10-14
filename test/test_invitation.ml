@@ -6,8 +6,14 @@ module D = Role_model.Default
 let model = Role_model.default
 let ana = member "ana" D.admin
 
-let invite ?(policy = Invitation.Policy.default) ?(members = [ ana ]) ?(invitations = []) ?(at = t0) ~id
-  name role
+let invite
+  ?(policy = Invitation.Policy.default)
+  ?(members = [ ana ])
+  ?(invitations = [])
+  ?(at = t0)
+  ~id
+  name
+  role
   =
   Invitation.create
     ~policy
@@ -24,7 +30,9 @@ let invite ?(policy = Invitation.Policy.default) ?(members = [ ana ]) ?(invitati
     ()
 ;;
 
-let show_error e = print_s [%message (e : Invitation.Error.t) ~code:(Invitation.Error.code e)]
+let show_error e =
+  print_s [%message (e : Invitation.Error.t) ~code:(Invitation.Error.code e)]
+;;
 
 let show_result r =
   match r with
@@ -108,16 +116,26 @@ let%expect_test "lifecycle" =
 let%expect_test "resend rotates the token; revoke is idempotent" =
   let i = invite ~id:"inv-1" "bea" D.approver |> Result.ok |> Option.value_exn in
   let late = at (20 * 24 * 60) in
-  let r = Invitation.resend i ~token:(token 77) ~at:late |> Result.ok |> Option.value_exn in
+  let r =
+    Invitation.resend i ~token:(token 77) ~at:late |> Result.ok |> Option.value_exn
+  in
   show_result (Ok r);
-  let accept proof = Invitation.accept r ~proof ~user:(user "bea") ~email:(email "bea") ~at:late in
+  let accept proof =
+    Invitation.accept r ~proof ~user:(user "bea") ~email:(email "bea") ~at:late
+  in
   show_result (accept (Token (token 5)));
   show_result (accept (Token (token 77)));
   let revoked = Invitation.revoke r ~at:late |> Result.ok |> Option.value_exn in
   show_result (Ok revoked);
   show_result (Invitation.revoke revoked ~at:late);
   show_result (accept Verified_email);
-  show_result (Invitation.accept revoked ~proof:Verified_email ~user:(user "bea") ~email:(email "bea") ~at:late);
+  show_result
+    (Invitation.accept
+       revoked
+       ~proof:Verified_email
+       ~user:(user "bea")
+       ~email:(email "bea")
+       ~at:late);
   [%expect
     {|
     ((status Pending) (version 1) (sent 2) (expires_at "2027-04-04 09:00:00Z"))
@@ -142,7 +160,13 @@ let%expect_test "creation checks" =
   show_result (invite ~policy ~invitations:[ first ] ~id:"inv-2" "cal" D.viewer);
   (* Expired invitations do not count against the limit. *)
   show_result
-    (invite ~policy ~invitations:[ first ] ~at:(at (15 * 24 * 60)) ~id:"inv-2" "cal" D.viewer);
+    (invite
+       ~policy
+       ~invitations:[ first ]
+       ~at:(at (15 * 24 * 60))
+       ~id:"inv-2"
+       "cal"
+       D.viewer);
   [%expect
     {|
     ((e (Unknown_role owner)) (code unknown_role))

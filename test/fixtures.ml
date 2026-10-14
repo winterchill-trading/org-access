@@ -10,7 +10,11 @@ let email name = Email.of_string (name ^ "@example.com")
 
 let organisation ?(verified = true) ?(status = Organisation.Status.Active) () =
   let o =
-    Organisation.create ~id:org_id ~name:"Example Trading Ltd" ~created_by:(user "ana") ~at:t0
+    Organisation.create
+      ~id:org_id
+      ~name:"Example Trading Ltd"
+      ~created_by:(user "ana")
+      ~at:t0
     |> Or_error.ok_exn
   in
   Organisation.set_status (Organisation.set_verified o verified) status
@@ -29,5 +33,6 @@ let member ?(org = org_id) name role =
 ;;
 
 let token seed =
-  Token.generate (fun n -> String.init n ~f:(fun j -> Char.of_int_exn ((seed + (7 * j)) land 0xff)))
+  Token.generate (fun n ->
+    String.init n ~f:(fun j -> Char.of_int_exn ((seed + (7 * j)) land 0xff)))
 ;;

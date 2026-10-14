@@ -18,7 +18,8 @@ let%expect_test "stable digests" =
   print_endline [%bin_digest: Invitation.Stable.V1.t];
   print_endline [%bin_digest: Audit.Stable.Event.V1.t];
   print_endline [%bin_digest: Audit.Stable.Entry.V1.t];
-  [%expect {|
+  [%expect
+    {|
     d9a8da25d5656b016fb4dbdc2e4197fb
     d9a8da25d5656b016fb4dbdc2e4197fb
     d9a8da25d5656b016fb4dbdc2e4197fb
@@ -44,7 +45,10 @@ let round_trip (type a) (module M : Binable.S with type t = a) ~equal (v : a) =
 let%expect_test "bin_prot round trips" =
   let open Fixtures in
   round_trip (module Role_model.Stable.V1) ~equal:Role_model.equal Role_model.default;
-  round_trip (module Member.Stable.V1) ~equal:Member.equal (member "ana" Role_model.Default.admin);
+  round_trip
+    (module Member.Stable.V1)
+    ~equal:Member.equal
+    (member "ana" Role_model.Default.admin);
   round_trip
     (module Approval_policy.Stable.V1)
     ~equal:Approval_policy.equal

@@ -17,7 +17,9 @@ let config =
   }
 ;;
 
-let show_error (e : Access.Error.t) = print_s [%message (e : Access.Error.t) ~code:(Access.Error.code e)]
+let show_error (e : Access.Error.t) =
+  print_s [%message (e : Access.Error.t) ~code:(Access.Error.code e)]
+;;
 
 let ok = function
   | Ok x -> x
@@ -49,7 +51,16 @@ let setup () =
 ;;
 
 let add s name role =
-  A.add_member config s ~actor:(user "ana") ~org:org_id ~user:(user name) ~email:(email name) ~role ~at:(at 1) ()
+  A.add_member
+    config
+    s
+    ~actor:(user "ana")
+    ~org:org_id
+    ~user:(user name)
+    ~email:(email name)
+    ~role
+    ~at:(at 1)
+    ()
   |> ok
   |> (ignore : Member.t -> unit)
 ;;
@@ -70,10 +81,21 @@ let%expect_test "organisation, decisions and the denial audit" =
   let s = setup () in
   print_result
     (fun _ -> ())
-    (A.create_organisation config s ~id:org_id ~name:"Again" ~creator:(user "zoe") ~email:(email "zoe") ~at:t0 ());
+    (A.create_organisation
+       config
+       s
+       ~id:org_id
+       ~name:"Again"
+       ~creator:(user "zoe")
+       ~email:(email "zoe")
+       ~at:t0
+       ());
   add s "olu" D.operator;
   let decide name action =
-    print_s [%sexp (A.authorize config s ~user:(user name) ~org:org_id action ~at:(at 2) : Authorize.Decision.t)]
+    print_s
+      [%sexp
+        (A.authorize config s ~user:(user name) ~org:org_id action ~at:(at 2)
+         : Authorize.Decision.t)]
   in
   decide "olu" (Action.requires_verified D.create_payments);
   decide "olu" (Action.requires D.manage_members);
@@ -116,18 +138,46 @@ let%expect_test "team management through the store" =
   let change actor name role =
     print_result
       (fun (m : Member.t) -> print_s [%sexp (m.role : Role.t)])
-      (A.change_role config s ~actor:(user actor) ~org:org_id ~user:(user name) ~role ~at:(at 2))
+      (A.change_role
+         config
+         s
+         ~actor:(user actor)
+         ~org:org_id
+         ~user:(user name)
+         ~role
+         ~at:(at 2))
   in
   change "olu" "bea" D.viewer;
   change "zoe" "bea" D.viewer;
   change "ana" "ana" D.viewer;
   change "ana" "olu" D.approver;
   change "bea" "ana" D.viewer;
-  print_result (fun () -> print_endline "left") (A.leave config s ~user:(user "bea") ~org:org_id ~at:(at 3));
-  print_result (fun () -> print_endline "removed") (A.remove_member config s ~actor:(user "ana") ~org:org_id ~user:(user "bea") ~at:(at 3));
-  print_result (fun () -> print_endline "removed") (A.remove_member config s ~actor:(user "bea") ~org:org_id ~user:(user "olu") ~at:(at 3));
   print_result
-    (fun (t : Team.t) -> print_s [%sexp (List.map t.members ~f:(fun m -> m.user, m.role) : (User_id.t * Role.t) list)])
+    (fun () -> print_endline "left")
+    (A.leave config s ~user:(user "bea") ~org:org_id ~at:(at 3));
+  print_result
+    (fun () -> print_endline "removed")
+    (A.remove_member
+       config
+       s
+       ~actor:(user "ana")
+       ~org:org_id
+       ~user:(user "bea")
+       ~at:(at 3));
+  print_result
+    (fun () -> print_endline "removed")
+    (A.remove_member
+       config
+       s
+       ~actor:(user "bea")
+       ~org:org_id
+       ~user:(user "olu")
+       ~at:(at 3));
+  print_result
+    (fun (t : Team.t) ->
+      print_s
+        [%sexp
+          (List.map t.members ~f:(fun m -> m.user, m.role) : (User_id.t * Role.t) list)])
     (A.team config s ~user:(user "olu") ~org:org_id ~at:(at 4));
   [%expect
     {|
@@ -156,7 +206,17 @@ let%expect_test "team management through the store" =
 let%expect_test "invitations end to end" =
   let s = setup () in
   let bea_inv, bea_token =
-    A.invite config s ~actor:(user "ana") ~org:org_id ~id:(Invitation_id.of_string "inv-bea") ~email:(email "bea") ~role:D.approver ~display_name:"Bea" ~at:(at 1) ()
+    A.invite
+      config
+      s
+      ~actor:(user "ana")
+      ~org:org_id
+      ~id:(Invitation_id.of_string "inv-bea")
+      ~email:(email "bea")
+      ~role:D.approver
+      ~display_name:"Bea"
+      ~at:(at 1)
+      ()
     |> ok
   in
   print_s [%sexp (bea_inv.token_hash : Token.Hash.t)];
@@ -165,20 +225,47 @@ let%expect_test "invitations end to end" =
     print_s
       [%sexp
         (A.preview s ~token ~at
-         |> Option.map ~f:(fun ((o : Organisation.t), (i : Invitation.t)) -> o.name, i.role, i.email)
+         |> Option.map ~f:(fun ((o : Organisation.t), (i : Invitation.t)) ->
+           o.name, i.role, i.email)
          : (string * Role.t * Email.t) option)]
   in
   preview bea_token (at 2);
   preview (token 1) (at 2);
   preview bea_token (at (15 * 24 * 60));
   (* A duplicate id, and a second invitation to the same address. *)
-  print_result (fun _ -> ())
-    (A.invite config s ~actor:(user "ana") ~org:org_id ~id:(Invitation_id.of_string "inv-bea") ~email:(email "eve") ~role:D.viewer ~at:(at 1) ());
-  print_result (fun _ -> ())
-    (A.invite config s ~actor:(user "ana") ~org:org_id ~id:(Invitation_id.of_string "inv-2") ~email:(email "bea") ~role:D.viewer ~at:(at 1) ());
+  print_result
+    (fun _ -> ())
+    (A.invite
+       config
+       s
+       ~actor:(user "ana")
+       ~org:org_id
+       ~id:(Invitation_id.of_string "inv-bea")
+       ~email:(email "eve")
+       ~role:D.viewer
+       ~at:(at 1)
+       ());
+  print_result
+    (fun _ -> ())
+    (A.invite
+       config
+       s
+       ~actor:(user "ana")
+       ~org:org_id
+       ~id:(Invitation_id.of_string "inv-2")
+       ~email:(email "bea")
+       ~role:D.viewer
+       ~at:(at 1)
+       ());
   let accept ?(email = email "bea") token =
     print_result
-      (fun (m : Member.t) -> print_s [%message "member" ~_:(m.user : User_id.t) ~_:(m.role : Role.t) ~_:(m.display_name : string option)])
+      (fun (m : Member.t) ->
+        print_s
+          [%message
+            "member"
+              ~_:(m.user : User_id.t)
+              ~_:(m.role : Role.t)
+              ~_:(m.display_name : string option)])
       (A.accept_link config s ~token ~user:(user "bea") ~email ~at:(at 3))
   in
   accept ~email:(Fixtures.email "eve") bea_token;
@@ -186,38 +273,80 @@ let%expect_test "invitations end to end" =
   accept bea_token;
   (* Resend rotates the link: the first one stops working. *)
   let (_ : Invitation.t * Token.t) =
-    A.invite config s ~actor:(user "ana") ~org:org_id ~id:(Invitation_id.of_string "inv-cal") ~email:(email "cal") ~role:D.viewer ~at:(at 4) ()
+    A.invite
+      config
+      s
+      ~actor:(user "ana")
+      ~org:org_id
+      ~id:(Invitation_id.of_string "inv-cal")
+      ~email:(email "cal")
+      ~role:D.viewer
+      ~at:(at 4)
+      ()
     |> ok
   in
   let first_cal_token = token (100 + !tokens) in
   let _, new_token =
-    A.resend config s ~actor:(user "ana") ~org:org_id ~id:(Invitation_id.of_string "inv-cal") ~at:(at 5) |> ok
+    A.resend
+      config
+      s
+      ~actor:(user "ana")
+      ~org:org_id
+      ~id:(Invitation_id.of_string "inv-cal")
+      ~at:(at 5)
+    |> ok
   in
   preview first_cal_token (at 6);
   preview new_token (at 6);
   (* Signing in with the invited address accepts the oldest usable invitation. *)
   print_result
-    (fun m -> print_s [%sexp (Option.map m ~f:(fun (m : Member.t) -> m.user, m.role) : (User_id.t * Role.t) option)])
+    (fun m ->
+      print_s
+        [%sexp
+          (Option.map m ~f:(fun (m : Member.t) -> m.user, m.role)
+           : (User_id.t * Role.t) option)])
     (A.accept_pending config s ~user:(user "cal") ~email:(email "cal") ~at:(at 7));
   print_result
     (fun m -> print_s [%sexp (Option.is_none m : bool)])
     (A.accept_pending config s ~user:(user "dan") ~email:(email "dan") ~at:(at 7));
   (* Revoke is idempotent until accepted. *)
   let (_ : Invitation.t * Token.t) =
-    A.invite config s ~actor:(user "ana") ~org:org_id ~id:(Invitation_id.of_string "inv-dan") ~email:(email "dan") ~role:D.viewer ~at:(at 8) ()
+    A.invite
+      config
+      s
+      ~actor:(user "ana")
+      ~org:org_id
+      ~id:(Invitation_id.of_string "inv-dan")
+      ~email:(email "dan")
+      ~role:D.viewer
+      ~at:(at 8)
+      ()
     |> ok
   in
   let revoke id =
     print_result
       (fun (i : Invitation.t) -> print_s [%sexp (i.status : Invitation.Status.t)])
-      (A.revoke config s ~actor:(user "ana") ~org:org_id ~id:(Invitation_id.of_string id) ~at:(at 9))
+      (A.revoke
+         config
+         s
+         ~actor:(user "ana")
+         ~org:org_id
+         ~id:(Invitation_id.of_string id)
+         ~at:(at 9))
   in
   revoke "inv-dan";
   revoke "inv-dan";
   revoke "inv-bea";
   revoke "inv-zzz";
-  print_result (fun _ -> ())
-    (A.revoke config s ~actor:(user "bea") ~org:org_id ~id:(Invitation_id.of_string "inv-dan") ~at:(at 9));
+  print_result
+    (fun _ -> ())
+    (A.revoke
+       config
+       s
+       ~actor:(user "bea")
+       ~org:org_id
+       ~id:(Invitation_id.of_string "inv-dan")
+       ~at:(at 9));
   print_audit s;
   [%expect
     {|
@@ -303,7 +432,14 @@ let approve s ?(id = "apr-1") name =
   print_result
     (fun ((a : Approval.t), progress) ->
       print_s [%message "" ~_:(progress : Approval.Progress.t) ~version:(a.version : int)])
-    (A.approve config s ~user:(user name) ~org:org_id ~id:(Approval_id.of_string id) ~at:(at 3) ())
+    (A.approve
+       config
+       s
+       ~user:(user name)
+       ~org:org_id
+       ~id:(Approval_id.of_string id)
+       ~at:(at 3)
+       ())
 ;;
 
 let%expect_test "approvals end to end" =
@@ -320,11 +456,26 @@ let%expect_test "approvals end to end" =
   approve s "cal";
   print_result
     (fun (a : Approval.t) -> print_s [%sexp (a.status : Approval.Status.t)])
-    (A.cancel config s ~user:(user "olu") ~org:org_id ~id:(Approval_id.of_string "apr-1") ~at:(at 4) ());
+    (A.cancel
+       config
+       s
+       ~user:(user "olu")
+       ~org:org_id
+       ~id:(Approval_id.of_string "apr-1")
+       ~at:(at 4)
+       ());
   let (_ : Approval.t) = open_ s ~id:"apr-2" "50.00 EUR" |> ok in
   print_result
     (fun (a : Approval.t) -> print_s [%sexp (a.status : Approval.Status.t)])
-    (A.reject config s ~user:(user "cal") ~org:org_id ~id:(Approval_id.of_string "apr-2") ~note:"duplicate" ~at:(at 4) ());
+    (A.reject
+       config
+       s
+       ~user:(user "cal")
+       ~org:org_id
+       ~id:(Approval_id.of_string "apr-2")
+       ~note:"duplicate"
+       ~at:(at 4)
+       ());
   [%expect
     {|
     ((e
@@ -374,20 +525,33 @@ let%expect_test "concurrent approvals retry, then give up" =
   Racy.lose := 2;
   print_result
     (fun ((a : Approval.t), _) -> print_s [%sexp (List.length a.approvals : int)])
-    (R.approve config s ~user:(user "bea") ~org:org_id ~id:(Approval_id.of_string "apr-1") ~at:(at 3) ());
+    (R.approve
+       config
+       s
+       ~user:(user "bea")
+       ~org:org_id
+       ~id:(Approval_id.of_string "apr-1")
+       ~at:(at 3)
+       ());
   Racy.lose := 3;
   print_result
     (fun _ -> ())
-    (R.approve config s ~user:(user "cal") ~org:org_id ~id:(Approval_id.of_string "apr-1") ~at:(at 3) ());
-  [%expect
-    {|
+    (R.approve
+       config
+       s
+       ~user:(user "cal")
+       ~org:org_id
+       ~id:(Approval_id.of_string "apr-1")
+       ~at:(at 3)
+       ());
+  [%expect {|
     1
     ((e Conflict) (code conflict))
     |}]
 ;;
 
-(* A store that crashes once after the membership is written and before the invitation
-   is marked accepted. *)
+(* A store that crashes once after the membership is written and before the invitation is
+   marked accepted. *)
 module Crashy = struct
   include Memory
 
@@ -407,11 +571,22 @@ module C = Access.Make (Monad.Ident) (Crashy)
 let%expect_test "an interrupted acceptance is finished by the next attempt" =
   let s = setup () in
   let _, tok =
-    C.invite config s ~actor:(user "ana") ~org:org_id ~id:(Invitation_id.of_string "inv-bea") ~email:(email "bea") ~role:D.approver ~at:(at 1) ()
+    C.invite
+      config
+      s
+      ~actor:(user "ana")
+      ~org:org_id
+      ~id:(Invitation_id.of_string "inv-bea")
+      ~email:(email "bea")
+      ~role:D.approver
+      ~at:(at 1)
+      ()
     |> ok
   in
   Crashy.crash := true;
-  (match C.accept_link config s ~token:tok ~user:(user "bea") ~email:(email "bea") ~at:(at 2) with
+  (match
+     C.accept_link config s ~token:tok ~user:(user "bea") ~email:(email "bea") ~at:(at 2)
+   with
    | exception Failure msg -> print_endline msg
    | _ -> print_endline "no crash");
   let status () =
@@ -424,8 +599,7 @@ let%expect_test "an interrupted acceptance is finished by the next attempt" =
     (fun (m : Member.t) -> print_s [%sexp (m.role : Role.t)])
     (C.accept_link config s ~token:tok ~user:(user "bea") ~email:(email "bea") ~at:(at 3));
   status ();
-  [%expect
-    {|
+  [%expect {|
     crash
     Pending
     approver

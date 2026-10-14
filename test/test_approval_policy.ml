@@ -40,10 +40,7 @@ let%expect_test "thresholds are strict and per currency" =
 
 let%expect_test "unlisted currencies" =
   let strict =
-    Approval_policy.create_exn
-      ~unlisted:Strictest
-      ~base:1
-      (Approval_policy.tiers policy)
+    Approval_policy.create_exn ~unlisted:Strictest ~base:1 (Approval_policy.tiers policy)
   in
   printf "%d\n" (Approval_policy.required strict (a "1 JPY"));
   [%expect {| 3 |}]
@@ -55,8 +52,7 @@ let%expect_test "a batch adds same-currency amounts first" =
   req [ "6000.00 EUR"; "6000.00 EUR" ];
   req [ "6000.00 EUR"; "-6000.00 EUR" ];
   req [ "9000.00 EUR"; "9000.00 GBP" ];
-  [%expect
-    {|
+  [%expect {|
     1
     2
     2
@@ -74,11 +70,18 @@ let%expect_test "validation" =
   try_ ~base:0 [];
   try_ ~base:1 [ { above = a "-1.00 EUR"; required = 2 } ];
   try_ ~base:2 [ { above = a "1.00 EUR"; required = 1 } ];
-  try_ ~base:1 [ { above = a "1.00 EUR"; required = 2 }; { above = a "1.00 EUR"; required = 3 } ];
-  try_ ~base:1 [ { above = a "1.00 EUR"; required = 3 }; { above = a "2.00 EUR"; required = 2 } ];
+  try_
+    ~base:1
+    [ { above = a "1.00 EUR"; required = 2 }; { above = a "1.00 EUR"; required = 3 } ];
+  try_
+    ~base:1
+    [ { above = a "1.00 EUR"; required = 3 }; { above = a "2.00 EUR"; required = 2 } ];
   print_s
     [%sexp
-      (Approval_policy.set_tiers policy Currency.usd [ { above = a "1.00 EUR"; required = 2 } ]
+      (Approval_policy.set_tiers
+         policy
+         Currency.usd
+         [ { above = a "1.00 EUR"; required = 2 } ]
        |> Or_error.map ~f:ignore
        : unit Or_error.t)];
   let p = Approval_policy.set_tiers policy Currency.eur [] |> Or_error.ok_exn in
