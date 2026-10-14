@@ -12,3 +12,6 @@ module Role_model = Role_model
 module Text = Text
 module Organisation = Organisation
 module Member = Member
+module Action = Action
+module Reason = Reason
+module Authorize = Authorize
