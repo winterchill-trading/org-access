@@ -12,11 +12,11 @@ let check ~what ~max raw =
   let s = collapse_whitespace raw in
   let length = String.length s in
   if length = 0
-  then Or_error.error_s [%message "blank" what]
+  then Or_error.error_s [%message "blank" (what : string)]
   else if length > max
-  then Or_error.error_s [%message "too long" what (length : int) (max : int)]
+  then Or_error.error_s [%message "too long" (what : string) (length : int) (max : int)]
   else if has_control s
-  then Or_error.error_s [%message "control character" what]
+  then Or_error.error_s [%message "control character" (what : string)]
   else Ok s
 ;;
 
