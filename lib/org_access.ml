@@ -34,3 +34,5 @@ module Approval = Approval
 module Invitation = Invitation
 module Team = Team
 module Audit = Audit
+module Store = Store
+module Store_memory = Store_memory
