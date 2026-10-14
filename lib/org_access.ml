@@ -15,3 +15,4 @@ module Member = Member
 module Action = Action
 module Reason = Reason
 module Authorize = Authorize
+module Approval_policy = Approval_policy
