@@ -33,3 +33,4 @@ module Approval_policy = Approval_policy
 module Approval = Approval
 module Invitation = Invitation
 module Team = Team
+module Audit = Audit
