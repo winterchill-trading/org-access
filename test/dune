@@ -6,3 +6,7 @@
    (:standard -source-tree-root .)))
  (preprocess
   (pps ppx_jane)))
+
+(cram
+ (package org-access-cli)
+ (deps %{bin:org-access}))
